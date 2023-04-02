@@ -30,7 +30,21 @@ class NotificationController extends AbstractController
     {
         
         $users = $this->em->getRepository(UserData::class)->findAll();
-        $response=$this->client->request('POST', 'https://fcm.googleapis.com/fcm/send', [
+        $devices = array();
+        if ($users) {
+            # code...
+            foreach ($users as $key => $value) {
+            array_push($devices,$value->getDeviceToken());
+            }
+            return $this->send($devices,"my title","my body",null);
+        }
+        else {
+            # code...
+            return $this->json(['failed'=>1],400);
+        }
+        
+        
+        /*$response=$this->client->request('POST', 'https://fcm.googleapis.com/fcm/send', [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Authorization'=> 'key=AAAA74CDm8k:APA91bHNL1Hoi9UXIRpfRTW-8Oc36azqS58RmRFtMUcswrYo_IRhErI9S1SRR5NJKPnepCuSOvdLOhZv6vBfyeflG9KPo0HACncQjaXQ3xdMKhjnRX6n-j_-YDZgu3iL3xLxUfGoDfrj'
@@ -49,8 +63,35 @@ class NotificationController extends AbstractController
                     "type" => "PASTOR_URL"
                 ]
             ]
-        ]);
-        return $this->json(['success'=>$response->getContent()],$response->getStatusCode());
+        ]);*/
+        //return $this->json(['success'=>$response->getContent()],$response->getStatusCode());
     }
+
     
+    private function send(array $registratio_ids, string $title, string $body, ?string $type):Response{
+        $response=$this->client->request('POST', 'https://fcm.googleapis.com/fcm/send', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization'=> 'key=AAAA74CDm8k:APA91bHNL1Hoi9UXIRpfRTW-8Oc36azqS58RmRFtMUcswrYo_IRhErI9S1SRR5NJKPnepCuSOvdLOhZv6vBfyeflG9KPo0HACncQjaXQ3xdMKhjnRX6n-j_-YDZgu3iL3xLxUfGoDfrj'
+            ],
+            
+            'json'=>[
+ 
+                "registration_ids"=>$registratio_ids,
+                "notification" => [
+                    "body" => $body,
+                    "title"=> $title
+                ],
+                "data" => [
+                    "body" => $body,
+                    "title"=>$title,
+                    "type" => $type
+                ]
+            ]
+        ]);
+
+      return $this->json(['content'=>$response->getContent()],$response->getStatusCode());
+
+    }
+
 }
