@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TutorRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,6 +32,14 @@ class Tutor
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
+
+    #[ORM\OneToMany(mappedBy: 'tutorId', targetEntity: UserData::class)]
+    private Collection $userData;
+
+    public function __construct()
+    {
+        $this->userData = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -92,6 +102,36 @@ class Tutor
     public function setCreatedAt(?\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserData>
+     */
+    public function getUserData(): Collection
+    {
+        return $this->userData;
+    }
+
+    public function addUserData(UserData $userData): self
+    {
+        if (!$this->userData->contains($userData)) {
+            $this->userData->add($userData);
+            $userData->setTutorId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserData(UserData $userData): self
+    {
+        if ($this->userData->removeElement($userData)) {
+            // set the owning side to null (unless already changed)
+            if ($userData->getTutorId() === $this) {
+                $userData->setTutorId(null);
+            }
+        }
 
         return $this;
     }
