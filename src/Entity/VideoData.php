@@ -56,6 +56,10 @@ class VideoData
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $songName = null;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
+    }
     public function getId(): ?int
     {
         return $this->id;

@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Notification;
 use App\Entity\UserData;
 use Doctrine\ORM\EntityManagerInterface;
+use Kreait\Firebase\JWT\Contract\Keys;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -25,10 +28,23 @@ class NotificationController extends AbstractController
         ]);
     }
 
-    #[Route('/notification/all', name: 'app_notification_all')]
-    public function notifyAll(): Response
+    #[Route('/notification/all', name: 'app_notification_all',methods:'POST')]
+    public function notifyAll(Request $request): Response
     {
+        $rs = json_decode($request->getContent(), true);
+        $title = $rs['title'];
+        $body = $rs['body'];
+        $type = $rs['type'];
+        $notif = new Notification();
+        $notif->setTitle($title);
+        $notif->setBody($body);
+        $notif->setType($type);
+        $notif->setIsSent(false);
+        $notif->setUsers(['all']);
+        $this->em->persist($notif);
+        $this->em->flush();
         
+
         $users = $this->em->getRepository(UserData::class)->findAll();
         $devices = array();
         if ($users) {
@@ -36,7 +52,7 @@ class NotificationController extends AbstractController
             foreach ($users as $key => $value) {
             array_push($devices,$value->getDeviceToken());
             }
-            return $this->send($devices,"my title","my body",null);
+            return $this->send($devices,$notif);
         }
         else {
             # code...
@@ -68,7 +84,7 @@ class NotificationController extends AbstractController
     }
 
     
-    private function send(array $registratio_ids, string $title, string $body, ?string $type):Response{
+    private function send(array $registratio_ids, Notification $notif):Response{
         $response=$this->client->request('POST', 'https://fcm.googleapis.com/fcm/send', [
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -79,18 +95,23 @@ class NotificationController extends AbstractController
  
                 "registration_ids"=>$registratio_ids,
                 "notification" => [
-                    "body" => $body,
-                    "title"=> $title
+                    "body" => $notif->getBody(),
+                    "title"=> $notif->getTitle()
                 ],
                 "data" => [
-                    "body" => $body,
-                    "title"=>$title,
-                    "type" => $type
+                    "body" => $notif->getBody(),
+                    "title"=>$notif->getTitle(),
+                    "type" => $notif->getType(),
                 ]
             ]
         ]);
+        if($response->getStatusCode() == 200){
+            $notif->setIsSent(true);
+            $notif->setSentTime(new \DateTime('now',new \DateTimeZone('Africa/Kinshasa')));
+            $this->em->flush();
+        }
 
-      return $this->json(['content'=>$response->getContent()],$response->getStatusCode());
+    return $this->json(['content'=>$response->getContent()/*,"ids"=>$registratio_ids*/],$response->getStatusCode());
 
     }
 

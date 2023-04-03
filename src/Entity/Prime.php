@@ -44,6 +44,12 @@ class Prime
     #[ORM\JoinColumn(nullable: false)]
     private ?Competition $competitionId = null;
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
+        
+    }
+
     public function getId(): ?int
     {
         return $this->id;

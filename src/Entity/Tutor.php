@@ -38,8 +38,10 @@ class Tutor
 
     public function __construct()
     {
+        $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
         $this->userData = new ArrayCollection();
     }
+   
 
     public function getId(): ?int
     {

@@ -72,8 +72,24 @@ class UserData
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: VideoData::class)]
     private Collection $videoData;
 
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $language = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $churchFile = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $churchName = null;
+
+    #[ORM\Column(length: 128, nullable: true)]
+    private ?string $churchAddress = null;
+
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $pastorName = null;
+
     public function __construct()
     {
+        //$this->cretedAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
         $this->videoData = new ArrayCollection();
     }
 
@@ -312,6 +328,66 @@ class UserData
                 $videoData->setUserId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(?string $language): self
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    public function getChurchFile(): ?string
+    {
+        return $this->churchFile;
+    }
+
+    public function setChurchFile(string $churchFile): self
+    {
+        $this->churchFile = $churchFile;
+
+        return $this;
+    }
+
+    public function getChurchName(): ?string
+    {
+        return $this->churchName;
+    }
+
+    public function setChurchName(?string $churchName): self
+    {
+        $this->churchName = $churchName;
+
+        return $this;
+    }
+
+    public function getChurchAddress(): ?string
+    {
+        return $this->churchAddress;
+    }
+
+    public function setChurchAddress(?string $churchAddress): self
+    {
+        $this->churchAddress = $churchAddress;
+
+        return $this;
+    }
+
+    public function getPastorName(): ?string
+    {
+        return $this->pastorName;
+    }
+
+    public function setPastorName(?string $pastorName): self
+    {
+        $this->pastorName = $pastorName;
 
         return $this;
     }

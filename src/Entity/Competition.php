@@ -47,6 +47,7 @@ class Competition
 
     public function __construct()
     {
+        $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
         $this->primes = new ArrayCollection();
     }
 
