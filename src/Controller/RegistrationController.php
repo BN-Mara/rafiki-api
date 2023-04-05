@@ -16,13 +16,14 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 class RegistrationController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $em,
-     private UserPasswordHasherInterface $ph, JWTTokenManagerInterface $JWTManager){
+     private UserPasswordHasherInterface $ph, private JWTTokenManagerInterface $jwtManager){
        
 
     }
     #[Route('/registration', name: 'app_registration')]
     public function index(Request $request): Response
     {
+        $authenticationSuccessHandler = $this->container->get('lexik_jwt_authentication.handler.authentication_success');
         //$jwtManager = $this->container->get('lexik_jwt_authentication.handler.authentication_success');
         $decoded = json_decode($request->getContent());
         $username = $decoded->username;
@@ -37,10 +38,14 @@ class RegistrationController extends AbstractController
         $user->setUsername($username);
         $this->em->persist($user);
         $this->em->flush();
+
+        $token = $this->jwtManager->create($user);
+        
   
         return $this->json(['message_en' => 'Registered Successfully',
         'message_fr' => 'Enregistré avec succès',
-        'uid'=>$user->getId()
+        'uid'=>$user->getId(),
+        'token'=>$token
     ]);
     }
 }
