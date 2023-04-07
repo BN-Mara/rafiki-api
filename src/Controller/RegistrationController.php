@@ -12,6 +12,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
+use PhpParser\Node\Stmt\TryCatch;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
@@ -45,19 +46,7 @@ class RegistrationController extends AbstractController
         $this->em->persist($user);
         $this->em->flush();
         
-            $email = (new Email())
-                ->from('noreply@maajabutalent.com')
-                ->to('sheltonsflash@gmail.com')
-                //->cc('cc@example.com')
-                //->bcc('bcc@example.com')
-                //->replyTo('fabien@example.com')
-                //->priority(Email::PRIORITY_HIGH)
-                ->subject('Time for Symfony Mailer!')
-                ->text('Sending emails is fun again!')
-                ->html('<p>See Twig integration for better HTML integration!</p>');
-    
-            $rs = $this->mailer->send($email);
-    
+            
             // ...
         
         $auth = $this->authHandler->handleAuthenticationSuccess($user);
@@ -71,7 +60,38 @@ class RegistrationController extends AbstractController
         //'token'=>$token
         "token"=>$authContent->token,
         "refresh_token"=>$authContent->refresh_token,
-        "mail"=>$rs
+        
     ]);
+    }
+
+    #[Route(path:"/mail",name:"app_mailer", methods:"POST")]
+    public function sendMail(Request $request):Response
+    {
+        $params = json_decode($request->getContent());
+        $message = $params->message;
+        $to = $params->to;
+        $object = $params->object;
+        try {
+            //code...
+            $email = (new Email())
+                ->from('noreply@maajabutalent.com')
+                ->to($to)
+                //->cc('cc@example.com')
+                //->bcc('bcc@example.com')
+                //->replyTo('fabien@example.com')
+                //->priority(Email::PRIORITY_HIGH)
+                ->subject($object)
+                ->text('Sending emails is fun again!')
+                ->html($message);
+    
+            $rs = $this->mailer->send($email);
+            return $this->json(['message'=>"Mail sent successfully"],200);
+    
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $this->json(['code'=>$th->getCode(), 'message'=>$th->getMessage()],500);
+
+        }
+
     }
 }
