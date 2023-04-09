@@ -2,15 +2,24 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Elasticsearch\Filter\TermFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Operations;
 use App\Repository\UserDataRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 
 #[ORM\Entity(repositoryClass: UserDataRepository::class)]
-#[ApiResource]
+#[ApiResource(operations:[new Get(),new Post(),new Put(),new GetCollection()])]
+#[ApiFilter(SearchFilter::class,properties:['uid'=>'exact', 'username'=>'exact','email'=>'exact'])]
 class UserData
 {
     #[ORM\Id]
