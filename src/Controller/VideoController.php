@@ -41,6 +41,47 @@ class VideoController extends AbstractController
         return $this->json($videoList);
 
 
+    }
+    #[Route("/api/video/user-like",name:'app_video_user_like',methods:'POST')]
+    public function setUserLikeVideo(Request $request):Response{
+        $content = json_decode($request->getContent());
+        $video = $this->em->getRepository(VideoData::class)->find($content->id);
+        if ($video != null) {
+            # code...
+            $likes = $video->getLikes();
+            if (in_array($content->uid,$likes)) {
 
+               $likes = array_diff($likes,[$content->uid]);
+               
+                # code...
+            }else{
+                array_push($likes,$content->uid);
+                
+            }
+            $video->setLikes($likes);
+               $this->em->flush();
+        }
+        return $this->json(["success"=>true,"video"=>$video,"uid"=>$content->uid]);
+    }
+    #[Route("/api/video/user-view",name:'app_video_user_view',methods:'POST')]
+    public function setUserViewVideo(Request $request):Response{
+        $content = json_decode($request->getContent());
+        $video = $this->em->getRepository(VideoData::class)->find($content->id);
+        if ($video != null) {
+            # code...
+            $views = $video->getViews();
+            if (in_array($content->uid,$views)) {
+
+                $views = array_diff($views,[$content->uid]);
+               
+                # code...
+            }else{
+                array_push($views,$content->uid);
+                
+            }
+            $video->setViews($views);
+               $this->em->flush();
+        }
+        return $this->json(["success"=>true,"video"=>$video,"uid"=>$content->uid]);
     }
 }
