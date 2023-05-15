@@ -88,7 +88,8 @@ class VideoController extends AbstractController
     }
 
     #[Route("/api/video/check", name:'app_video_check', methods:'POST')]
-    public function checkVideoToUpload(Request $request){
+    public function checkVideoToUpload(Request $request):Response
+    {
         /*
         {
             primeId:1,
