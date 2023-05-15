@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Prime;
+use App\Entity\UserData;
 use App\Entity\VideoData;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -72,7 +74,7 @@ class VideoController extends AbstractController
             $views = $video->getViews();
             if (in_array($content->uid,$views)) {
 
-                $views = array_diff($views,[$content->uid]);
+                //$views = array_diff($views,[$content->uid]);
                
                 # code...
             }else{
@@ -83,5 +85,44 @@ class VideoController extends AbstractController
                $this->em->flush();
         }
         return $this->json(["success"=>true,"video"=>$video,"uid"=>$content->uid]);
+    }
+
+    #[Route("/api/video/check", name:'app_video_check', methods:'POST')]
+    public function checkVideoToUpload(Request $request){
+        /*
+        {
+            primeId:1,
+            userId:2
+        }
+
+        */
+        $content = json_decode($request->getContent());
+        $prime = $this->em->getRepository(Prime::class)->find($content->primeId);
+        $cd =  $this->em->getRepository(UserData::class)->find($content->userId);
+        if ($prime && $cd) {
+            # code...
+            if ($prime->isIsActive() ) {
+                # code...
+                if ($cd->getStatus() == "IN") {
+                    # code...
+                    if ($cd->getChurchFile() != null && $cd->getChurchFile() != "not file" && $cd->getChurchFile() != "") {
+                        # code...
+                        return $this->json(["success"=>true,"message_en"=>"Valid request","message_fr"=>"Demande valide"],200);
+                    }else {
+                        # code...
+                        return $this->json(["success"=>false,"message_en"=>"Please upload church letter","message_fr"=>"Veuillez envoyer la lettre du pasteur"],403);
+                    }
+                    
+                }else {
+                    return $this->json(["success"=>false,"message_en"=>"User is OUT", "message_fr"=>"Candidate est elimine"],401);
+                }
+                
+            }else {
+                return $this->json(["success"=>true,"message_en"=>"Prime is not active","message_fr"=>"Prime n'est pas active"],400);
+            }
+
+        }else{
+            return $this->json(["success"=>false,"message_en"=>"Prime not exist","message_fr"=>"Prime n'existe pas"],404);
+        }
     }
 }
