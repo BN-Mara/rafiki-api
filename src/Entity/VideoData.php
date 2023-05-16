@@ -5,14 +5,17 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\VideoDataRepository;
 use App\State\VideoStateProcessor;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VideoDataRepository::class)]
-#[ApiResource]
+#[ApiResource(operations:[new Get(),new Post(),new Put(),new GetCollection()])]
 #[Post(processor: VideoStateProcessor::class)]
 #[ApiFilter(SearchFilter::class,properties:['username'=>'exact','primeId'=>'exact','userId'=>'exact'])]
 class VideoData
