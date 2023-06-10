@@ -128,16 +128,23 @@ class VideoController extends AbstractController
         }
     }
     #[Route("/api/current-prime/{code}", name:'app_current_prime', methods:'GET')]
-    public function getCurrentPrime( $code){
+    public function getCurrentPrime( $code): Response{
         $competition = $this->em->getRepository(Competition::class)->findOneBy(['code'=>$code]);
         if ($competition) {
             # code...
             $prime = $this->em->getRepository(Prime::class)->findOneBy(['competitionId'=>$competition->getId(),'isActive'=>true]);
-            return $this->json($prime,200);
+            if ($prime) {
+                # code...
+                return $this->json($prime,200);
+            }
+            else{
+                return $this->json(["success"=>false,"message_en"=>"No active prime at the moment, please wait for the new prime", 
+                "message_fr"=>"Aucun prime actif pour le moment, veuillez attendre le nouveau prime"],400);
+            }
 
         }else {
             # code...
-            return $this->json(["success"=>false,"message"=>"Prime not found"]);
+            return $this->json(["success"=>false,"message_en"=>"Competition not found","message_fr"=>"compétition introvable"]);
         }
         
 
