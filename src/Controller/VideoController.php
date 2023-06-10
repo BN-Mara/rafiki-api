@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Competition;
 use App\Entity\Prime;
 use App\Entity\UserData;
 use App\Entity\VideoData;
@@ -125,5 +126,20 @@ class VideoController extends AbstractController
         }else{
             return $this->json(["success"=>false,"message_en"=>"Prime not exist","message_fr"=>"Prime n'existe pas"],404);
         }
+    }
+    #[Route("/api/current-prime/{code}", name:'app_current_prime', methods:'GET')]
+    public function getCurrentPrime( $code){
+        $competition = $this->em->getRepository(Competition::class)->findOneBy(['code'=>$code]);
+        if ($competition) {
+            # code...
+            $prime = $this->em->getRepository(Prime::class)->findOneBy(['competitionId'=>$competition->getId(),'isActive'=>true]);
+            return $this->json($prime,200);
+
+        }else {
+            # code...
+            return $this->json(["success"=>false,"message"=>"Prime not found"]);
+        }
+        
+
     }
 }
