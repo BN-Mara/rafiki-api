@@ -124,7 +124,7 @@ class VideoController extends AbstractController
             }
 
         }else{
-            return $this->json(["success"=>false,"message_en"=>"Prime not exist","message_fr"=>"Prime n'existe pas"],404);
+            return $this->json(["success"=>false,"message_en"=>"Prime not exist","message_fr"=>"Prime n'existe pas"],400);
         }
     }
     #[Route("/api/current-prime/{code}", name:'app_current_prime', methods:'GET')]
@@ -149,4 +149,10 @@ class VideoController extends AbstractController
         
 
     }
+    #[Route("/api/app-version/{name}", name:'app_current_prime', methods:'GET')]
+    public function getVersion($name):Response{
+        return $this->json(["success"=>true,"version"=>"1.0.0","name"=>$name]);
+    }
+
+
 }

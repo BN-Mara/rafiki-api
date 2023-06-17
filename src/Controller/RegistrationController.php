@@ -34,6 +34,12 @@ class RegistrationController extends AbstractController
         $username = $decoded->username;
         $plaintextPassword = $decoded->password;
         $roles = $decoded->roles;
+
+        $ck_user=$this->em->getRepository(User::class)->findOneBy(["username"=>$username]);
+        if($ck_user){
+            return $this->json(["message_en"=>"this email is already taken","message_fr"=>"Ce nom E-mail est déjà pris"],400);
+        }
+
   
         $user = new User();
         $hashedPassword = $this->ph->hashPassword(
