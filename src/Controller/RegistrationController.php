@@ -37,7 +37,7 @@ class RegistrationController extends AbstractController
 
         $ck_user=$this->em->getRepository(User::class)->findOneBy(["username"=>$username]);
         if($ck_user){
-            return $this->json(["message_en"=>"this email is already taken","message_fr"=>"Ce nom E-mail est déjà pris"],400);
+            return $this->json(["success"=>"false","message_en"=>"this email is already taken","message_fr"=>"Cet E-mail est déjà pris"],400);
         }
 
   
