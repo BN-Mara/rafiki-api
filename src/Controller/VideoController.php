@@ -93,7 +93,7 @@ class VideoController extends AbstractController
     #[Route("/api/video/check", name:'app_video_check', methods:'POST')]
     public function checkVideoToUpload(Request $request):Response
     {
-        return $this->json(["success"=>true,"message_en"=>"Valid request","message_fr"=>"Demande valide"],200);
+        //return $this->json(["success"=>true,"message_en"=>"Valid request","message_fr"=>"Demande valide"],200);
         /*
         {
             primeId:1,
@@ -152,7 +152,7 @@ class VideoController extends AbstractController
         
 
     }
-    #[Route("/api/app-version/{name}", name:'app_current_prime', methods:'GET')]
+    #[Route("/api/app-version/{name}", name:'app_current_version', methods:'GET')]
     public function getVersion($name):Response{
         return $this->json(["success"=>true,"version"=>"1.0.0","name"=>$name]);
     }
