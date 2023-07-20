@@ -157,7 +157,7 @@ class VideoController extends AbstractController
         return $this->json(["success"=>true,"version"=>"1.0.0","name"=>$name]);
     }
 
-    #[Route("/api/user/user-delete", name:'app_delete_account', methods:'POST')]
+    #[Route("ca", name:'app_delete_account', methods:'POST')]
     public function deleteAcount(UserPasswordHasherInterface $passwordHasher, Request $request):Response{
         $content = json_decode($request->getContent());
         $password = $content->password;

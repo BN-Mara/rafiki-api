@@ -96,6 +96,9 @@ class UserData
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $pastorName = null;
 
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private array $blokedUsers = [];
+
     public function __construct()
     {
         //$this->cretedAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
@@ -397,6 +400,18 @@ class UserData
     public function setPastorName(?string $pastorName): self
     {
         $this->pastorName = $pastorName;
+
+        return $this;
+    }
+
+    public function getBlokedUsers(): array
+    {
+        return $this->blokedUsers;
+    }
+
+    public function setBlokedUsers(?array $blokedUsers): self
+    {
+        $this->blokedUsers = $blokedUsers;
 
         return $this;
     }
