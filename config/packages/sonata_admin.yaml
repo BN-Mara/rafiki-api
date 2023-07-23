@@ -1,8 +1,10 @@
 sonata_admin:
-    title: 'Sonata Admin'
+    title: 'Maajabu Rafiki'
     dashboard:
         blocks:
             - { type: sonata.admin.block.admin_list, position: left }
+    
+    title_logo: images/logo_title.png 
 
 sonata_block:
     blocks:
