@@ -60,3 +60,19 @@ services:
         class: App\Admin\NotificationAdmin
         tags:
             - { name: sonata.admin, model_class: App\Entity\Notification, manager_type: orm, label: Notification }
+    admin.artist:
+        class: App\Admin\ArtistAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Artist, manager_type: orm, label: Artists }
+    admin.votemode:
+        class: App\Admin\VoteModeAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\VoteMode, manager_type: orm, label: VoteModes }
+    admin.vote:
+        class: App\Admin\VoteAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Vote, manager_type: orm, label: Votes}
+    admin.payment:
+        class: App\Admin\PaymentAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Payment, manager_type: orm, label: Payments }

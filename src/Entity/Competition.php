@@ -45,10 +45,18 @@ class Competition
     #[ORM\OneToMany(mappedBy: 'competitionId', targetEntity: Prime::class)]
     private Collection $primes;
 
+    #[ORM\OneToMany(mappedBy: 'competition', targetEntity: Artist::class)]
+    private Collection $artists;
+
+    #[ORM\OneToMany(mappedBy: 'competition', targetEntity: VoteMode::class)]
+    private Collection $voteModes;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
         $this->primes = new ArrayCollection();
+        $this->artists = new ArrayCollection();
+        $this->voteModes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -176,6 +184,66 @@ class Competition
             // set the owning side to null (unless already changed)
             if ($prime->getCompetitionId() === $this) {
                 $prime->setCompetitionId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Artist>
+     */
+    public function getArtists(): Collection
+    {
+        return $this->artists;
+    }
+
+    public function addArtist(Artist $artist): self
+    {
+        if (!$this->artists->contains($artist)) {
+            $this->artists->add($artist);
+            $artist->setCompetition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArtist(Artist $artist): self
+    {
+        if ($this->artists->removeElement($artist)) {
+            // set the owning side to null (unless already changed)
+            if ($artist->getCompetition() === $this) {
+                $artist->setCompetition(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VoteMode>
+     */
+    public function getVoteModes(): Collection
+    {
+        return $this->voteModes;
+    }
+
+    public function addVoteMode(VoteMode $voteMode): self
+    {
+        if (!$this->voteModes->contains($voteMode)) {
+            $this->voteModes->add($voteMode);
+            $voteMode->setCompetition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVoteMode(VoteMode $voteMode): self
+    {
+        if ($this->voteModes->removeElement($voteMode)) {
+            // set the owning side to null (unless already changed)
+            if ($voteMode->getCompetition() === $this) {
+                $voteMode->setCompetition(null);
             }
         }
 

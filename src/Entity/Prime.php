@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PrimeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -44,9 +46,13 @@ class Prime
     #[ORM\JoinColumn(nullable: false)]
     private ?Competition $competitionId = null;
 
+    #[ORM\OneToMany(mappedBy: 'prime', targetEntity: Vote::class)]
+    private Collection $votes;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
+        $this->votes = new ArrayCollection();
         
     }
 
@@ -159,6 +165,36 @@ class Prime
     public function setCompetitionId(?Competition $competitionId): self
     {
         $this->competitionId = $competitionId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Vote>
+     */
+    public function getVotes(): Collection
+    {
+        return $this->votes;
+    }
+
+    public function addVote(Vote $vote): self
+    {
+        if (!$this->votes->contains($vote)) {
+            $this->votes->add($vote);
+            $vote->setPrime($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVote(Vote $vote): self
+    {
+        if ($this->votes->removeElement($vote)) {
+            // set the owning side to null (unless already changed)
+            if ($vote->getPrime() === $this) {
+                $vote->setPrime(null);
+            }
+        }
 
         return $this;
     }
