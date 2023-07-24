@@ -56,7 +56,7 @@ class NotificationService{
         $response=$this->client->request('POST', 'https://fcm.googleapis.com/fcm/send', [
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Authorization'=> 'key=AAAA74CDm8k:APA91bHNL1Hoi9UXIRpfRTW-8Oc36azqS58RmRFtMUcswrYo_IRhErI9S1SRR5NJKPnepCuSOvdLOhZv6vBfyeflG9KPo0HACncQjaXQ3xdMKhjnRX6n-j_-YDZgu3iL3xLxUfGoDfrj'
+                'Authorization'=> 'key=AAAAEI7Eizo:APA91bFbxWpYtpcDpG7A7wNhbeqSVBGWBekGkXWsBfipWAMM_9i7907Z-Nup4971kdjN7yxxQqD47tqsLJZ2DTvJWpQpb_WxQEnW3gNeGJtdAjepuHW_pw2RI4YFkvoF_CVkke1-xHjc'
             ],
             
             'json'=>[
@@ -64,12 +64,16 @@ class NotificationService{
                 "registration_ids"=>$registratio_ids,
                 "notification" => [
                     "body" => $notif->getBody(),
-                    "title"=> $notif->getTitle()
+                    "title"=> $notif->getTitle(),
+                    "priority"=> "high",
+                    "content_available"=> true,
                 ],
                 "data" => [
                     "body" => $notif->getBody(),
                     "title"=>$notif->getTitle(),
                     "type" => $notif->getType(),
+                    "priority"=> "high",
+                    "content_available"=> true,
                 ]
             ]
         ]);

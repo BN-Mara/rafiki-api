@@ -3,6 +3,8 @@
 namespace App\Admin;
 
 use App\Entity\Competition;
+use App\Entity\Notification;
+use App\Service\NotificationService;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -18,6 +20,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 
 final class UserDataAdmin extends AbstractAdmin{
+
+    public function __construct(private NotificationService $notifyer)
+    {
+        
+    }
 
     protected function configureFormFields(FormMapper $form): void
     {
@@ -51,6 +58,7 @@ final class UserDataAdmin extends AbstractAdmin{
         $datagrid->add('name');
         $datagrid->add('phone');
         $datagrid->add('email');
+        $datagrid->add('userType');
     
     }
 
@@ -65,7 +73,6 @@ final class UserDataAdmin extends AbstractAdmin{
         $list->addIdentifier('birthDate');
         $list->addIdentifier('isActive');
         $list->addIdentifier('status');
-        
 
         
     }
@@ -87,6 +94,40 @@ final class UserDataAdmin extends AbstractAdmin{
         $show->add('churchFile');
         $show->add('churchAddress');
         
+    }
+    public function prePersist(object $user): void
+    {
+        
+    }
+
+    public function preUpdate(object $user): void
+    {
+        if($user->getStatus() == "RED"){
+            $body = "Vous avez ete elemine de la competition";
+
+        }
+        if($user->getStatus() == "ORANGE"){
+            $body = "Vous avez passe a l'epreuve suivante";
+
+        }
+        if($user->getStatus() == "GREEN"){
+            $body = "Vous avez ete selectione pour la phase finale";
+
+        }
+        
+        $type = "SELECTION_TYPE";
+        $title = "Maajabu Rafiki";
+
+        $notif = new Notification();
+        $notif->setTitle($title);
+        $notif->setBody($body);
+        $notif->setType($type);
+        $notif->setIsSent(false);
+        
+        $notif->setUsers([$user->getId()]);
+        $devices = array();
+        array_push($devices,$user->getDeviceToken());
+        $this->notifyer->notify($devices,$notif);
     }
 
 }
