@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DESOLE::Rakfiki!{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 right">
+                <div class="filgramme">
+                    DESOLE
+                </div>
+                <div class="content">
+                    <img style="width: 200px;" src="{{asset('images/cancel.png')}}" alt="canceled_img">
+                    <h1 style="font-size: 1.7rem; margin-top: 15px; text-align: center;">Paiement annulé</h1>
+                    <p style="width: 500px; text-align: center; max-width: 80%; opacity: .5;">Vous venez d'anuler le paiment de votre vote. Votez pour donner plus de chance à votre artiste</p>
+                    <div class="back" style="margin-top: 30px;">
+                        <a href="{{path('app_vote_process_start')}}" style="color: #B07A12;">Retour à la page d'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

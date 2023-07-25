@@ -97,8 +97,10 @@ class VoteProcessController extends AbstractController
     public function paymentSuccess(Request $request): Response
     {
         $session = $request->getSession();
-        if (!$session->has('reference')) {
-            # code...
+        if(!$session->has('reference')){
+            return $this->redirectToRoute('app_vote_process_start');
+        }
+       
             $ref = $session->get('reference');
             //$payment = new Payment();
             $payment = $this->em->getRepository(Payment::class)->findOneBy(['reference'=>$ref]);
@@ -111,17 +113,26 @@ class VoteProcessController extends AbstractController
             $payment->setStatus('PAYED');
             $vote->setPayment($payment);
             $this->em->flush();
+            $session->remove('reference');
 
-            return $this->redirectToRoute('app_vote_process_start');
-        }
-        return new Response("Payment accepted");
+           
+          
+        
+        return $this->render('vote_process/success.html.twig', [
+            'controller_name' => 'VoteProcessController',
+            'candidate'=>$vote->getArtist(),
+            'vote'=>$vote
+        ]);
 
     }
     #[Route('/vote/process/fail', name: 'app_vote_process_fail')]
     public function paymentFailed(Request $request):Response{
         $session = $request->getSession();
-        if (!$session->has('reference')) {
-            # code...
+        if(!$session->has('reference')){
+            return $this->redirectToRoute('app_vote_process_start');
+        }
+       
+       
             $ref = $session->get('reference');
             //$payment = new Payment();
             $payment = $this->em->getRepository(Payment::class)->findOneBy(['reference'=>$ref]);
@@ -134,15 +145,23 @@ class VoteProcessController extends AbstractController
             $payment->setStatus('FAILED');
             $vote->setPayment($payment);
             $this->em->flush();
-            return $this->redirectToRoute('app_vote_process_start');
-        }
-        return new Response("Payment failed");
+           
+        
+            return $this->render('vote_process/failed.html.twig', [
+                'status' => 'failed',
+                'candidate'=>$vote->getArtist(),
+                'vote'=>$vote
+            ]);
+    
     }
     #[Route('/vote/process/cancel', name: 'app_vote_process_cancel')]
     public function paymentCanceled(Request $request):Response{
         $session = $request->getSession();
-        if (!$session->has('reference')) {
-            # code...
+        if(!$session->has('reference')){
+            return $this->redirectToRoute('app_vote_process_start');
+        }
+       
+        
             $ref = $session->get('reference');
             //$payment = new Payment();
             $payment = $this->em->getRepository(Payment::class)->findOneBy(['reference'=>$ref]);
@@ -155,9 +174,12 @@ class VoteProcessController extends AbstractController
             $payment->setStatus('CANCELED');
             $vote->setPayment($payment);
             $this->em->flush();
-            return $this->redirectToRoute('app_vote_process_start');
-        }
-        return new Response("Payment canceled!");
+           
+        return $this->render('vote_process/failed.html.twig', [
+            'status' => 'canceled',
+            'candidate'=>$vote->getArtist(),
+            'vote'=>$vote
+        ]);
 
     }
 }

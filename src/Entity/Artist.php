@@ -49,7 +49,7 @@ class Artist
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updated = null;
-    const SERVER_PATH_TO_IMAGE_FOLDER = '/public/images/artists';
+    const SERVER_PATH_TO_IMAGE_FOLDER = 'images/artists';
 
     /**
      * Unmapped property to handle file uploads
@@ -220,8 +220,9 @@ class Artist
 
        // move takes the target directory and target filename as params
        $fname = $this->firstName.''.$this->lastName.''.$this->numero.'.jpg';
+       //die(var_dump(dirname(__DIR__).self::SERVER_PATH_TO_IMAGE_FOLDER));
        $this->getFile()->move(
-        dirname(__DIR__).self::SERVER_PATH_TO_IMAGE_FOLDER,
+        self::SERVER_PATH_TO_IMAGE_FOLDER,
            $fname
        );
 

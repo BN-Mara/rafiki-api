@@ -63,4 +63,38 @@ final class PrimeAdmin extends AbstractAdmin{
         $show->add('createdBy');
     }
 
+    public function prePersist(object $object): void
+    {
+        //$plainPassword = $object->getPassword();
+        if($object->isIsActive()){
+
+            $em  = $this->getModelManager()->getEntityManager(Prime::class);
+            $comp = $object->getCompetitionId();
+            foreach($comp as $c){
+                $c->setIsActive(false);
+            }
+            $em->flush();
+            $object->setIsActive(true);
+        }
+
+    }     
+     
+
+    
+    public function preUpdate(object $object): void
+    {
+        if($object->isIsActive()){
+
+            $em  = $this->getModelManager()->getEntityManager(Prime::class);
+            $comp = $object->getCompetitionId();
+            foreach($comp as $c){
+                $c->setIsActive(false);
+            }
+            $em->flush();
+            $object->setIsActive(true);
+        }
+             $object->setModificationTime(new \DateTime('now',new \DateTimeZone('Africa/Kinshasa')));
+
+    }
+
 }

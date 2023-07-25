@@ -45,7 +45,9 @@ final class ArtistAdmin extends AbstractAdmin{
                 
             ],
         ]);
-        $form->add('birthDate', DateType::class);
+        $form->add('birthDate', DateType::class,[
+            'years'=>range(2005,2020)
+        ]);
         $form->add('isActive', CheckboxType::class);
 
         $form->add('file', FileType::class,[
