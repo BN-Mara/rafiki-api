@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Artist;
+use App\Entity\NewsLetterSubscriber;
 use App\Entity\Payment;
 use App\Entity\Prime;
 use App\Entity\Vote;
@@ -76,22 +77,57 @@ class VoteProcessController extends AbstractController
         $session = $request->getSession();
         $session->set('reference',$payment->getReference());
         
-        return $this->redirect($this->payUrl->paymentUrl($payment));
+        return $this->redirect($this->payUrl->paymentUrl($payment, $request->getSchemeAndHttpHost()));
 
         }
 
         $artists = $this->em->getRepository(Artist::class)->findAll();
         $vmodes = $this->em->getRepository(VoteMode::class)->findAll();
         $artistArray = array_chunk($artists,4);
+        $total_text = count($artists)." Artist";
+        if(count($artists) > 1){
+            $total_text = count($artists)." Artists"; 
+        }
         
 
         return $this->render('vote_process/votelist.html.twig', [
             'controller_name' => 'VoteProcessController',
             'artistArray'=>$artistArray,
             'voteModes'=>$vmodes,
-            'artists'=>$artists
+            'artists'=>$artists,
+            "total"=>$total_text
         ]);
     }
+    #[Route('/vote/process/restart', name: 'app_vote_process_restart')]
+    public function paymentRestart(Request $request):Response{
+
+        if($request->getMethod() === 'POST'){
+
+        $reference = $request->request->get('reference');
+        $payment = $this->em->getRepository(Payment::class)->findOneBy(['reference'=>$reference]);
+            if (!$payment) {
+                # code...
+                return new Response("payment for Refecenfe not found");
+            }
+
+
+        $session = $request->getSession();
+
+        $session->set('reference',$reference);
+        if($payment->getStatus() != 'PAYED'){
+            return $this->redirect($this->payUrl->paymentUrl($payment,$request->getSchemeAndHttpHost()));
+
+        }else{
+           return $this->redirectToRoute('app_vote_process_start');
+        }
+        
+        
+        }
+        return $this->redirectToRoute('app_vote_process_start');
+        
+
+    }
+
 
     #[Route('/vote/process/success', name: 'app_vote_process_success')]
     public function paymentSuccess(Request $request): Response
@@ -120,13 +156,17 @@ class VoteProcessController extends AbstractController
         
         return $this->render('vote_process/success.html.twig', [
             'controller_name' => 'VoteProcessController',
-            'candidate'=>$vote->getArtist(),
-            'vote'=>$vote
+            //'candidate'=>$vote->getArtist(),
+            //'vote'=>$vote
         ]);
 
     }
+
+    
+
     #[Route('/vote/process/fail', name: 'app_vote_process_fail')]
     public function paymentFailed(Request $request):Response{
+      
         $session = $request->getSession();
         if(!$session->has('reference')){
             return $this->redirectToRoute('app_vote_process_start');
@@ -145,12 +185,14 @@ class VoteProcessController extends AbstractController
             $payment->setStatus('FAILED');
             $vote->setPayment($payment);
             $this->em->flush();
+            $session->remove('reference');
+            
            
         
             return $this->render('vote_process/failed.html.twig', [
                 'status' => 'failed',
-                'candidate'=>$vote->getArtist(),
-                'vote'=>$vote
+                //'candidate'=>$vote->getArtist(),
+                //'vote'=>$vote
             ]);
     
     }
@@ -160,8 +202,7 @@ class VoteProcessController extends AbstractController
         if(!$session->has('reference')){
             return $this->redirectToRoute('app_vote_process_start');
         }
-       
-        
+
             $ref = $session->get('reference');
             //$payment = new Payment();
             $payment = $this->em->getRepository(Payment::class)->findOneBy(['reference'=>$ref]);
@@ -174,12 +215,48 @@ class VoteProcessController extends AbstractController
             $payment->setStatus('CANCELED');
             $vote->setPayment($payment);
             $this->em->flush();
+            $session->remove('reference');
            
         return $this->render('vote_process/failed.html.twig', [
             'status' => 'canceled',
             'candidate'=>$vote->getArtist(),
             'vote'=>$vote
         ]);
+
+    }
+
+    #[Route('/vote/process/notify', name: 'app_vote_process_notify')]
+    public function paymentNotify(Request $request):Response{
+       
+        return $this->json(["success"=>true,"message"=>"Ok"]);
+
+    }
+
+    #[Route('/vote/process/search', name: 'app_vote_process_search')]
+    public function search(Request $request):Response{
+        $sh = $request->request->get("search");
+
+        $artists = $this->em->getRepository(Artist::class)->findBySearchTerm($sh);
+        $vmodes = $this->em->getRepository(VoteMode::class)->findAll();
+        //$artistArray = array_chunk($artists,4);
+        $total_text = count($artists)." Artist";
+        if(count($artists) > 1){
+            $total_text = count($artists)." Artists";
+        }
+       
+       $template = $this->render('vote_process/_list.html.twig',["artists"=>$artists,"voteModes"=>$vmodes])->getContent();
+        return $this->json(["list"=>$template,"total"=>$total_text, ]);
+    }
+
+    
+    #[Route('/vote/process/newsletter', name: 'app_vote_process_newsletter')]
+    public function subscribe(Request $request):Response{
+        $sh = $request->request->get("email");
+        $news = new NewsLetterSubscriber();
+        $news->setEmail($sh);
+        $this->em->persist($news);
+        $this->em->flush();
+        return $this->json(["success"=>true,"message"=>"Ok"]);
 
     }
 }

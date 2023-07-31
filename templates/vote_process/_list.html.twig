@@ -1,0 +1,40 @@
+<div class="row">
+		{% for ca in artists %}
+          <div class="col-lg-3 col-md-4 col-sm-6 d-flex" >
+            <div class="card w-100 my-2 shadow-2-strong">
+              <img src="{{asset('images/artists/' ~ ca.coverImage)}}" class="card-img-top" />
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex flex-row">
+                  <h5 class="mb-1 me-1">{{ca.firstName}} {{ca.lastName}}</h5>
+				  <span class="text-danger"><s>{{ca.numero}}</s></span>
+                </div>
+                <p class="card-text">
+				<div class="input-group mb-2">
+  
+  					<select name="voteModeId" id="inputGroupSelect02" class="form-select" aria-label="Default select vote-type">
+										
+						{% for votem in voteModes %}
+							<option value="{{votem.id}}">{{votem.description}}</option>
+						{% endfor %}
+					</select>
+  					<label class="input-group-text" for="inputGroupSelect02">
+					<select name="currency" id="select" class="form-select" aria-label="Default select currency">									
+						<option value="USD">USD</option>
+                        <option value="CDF">CDF</option>
+					     </select>
+					</label>
+				</div>
+					
+  					
+				
+				</p>
+                <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
+                  
+					<button  class="btn btn-warning shadow-0 me-1" type="submit"  formmethod="post" formaction="{{path('app_vote_process_start')}}">PAYER +</button>
+					<button class="btn btn-light border icon-hover px-2 pt-2"><i class="fas fa-heart fa-lg text-secondary px-1"></i></button>
+				</div>
+              </div>
+            </div>
+          </div>
+		  {% endfor %}
+		</div>

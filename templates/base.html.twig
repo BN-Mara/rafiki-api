@@ -7,6 +7,7 @@
 	<meta name="keywords" content="Show, TV, Cinema, Streaming, Serie">
 	<meta name="author" content="BN Mara">
         <title>{% block title %}Welcome!{% endblock %}</title>
+        
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
          <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
@@ -34,7 +35,7 @@
       <div class="row gy-3">
         <!-- Left elements -->
         <div class="col-lg-2 col-sm-4 col-4">
-          <a href="https://mdbootstrap.com/" target="_blank" class="float-start">
+          <a href="{{path('app_vote_process_start')}}" class="float-start">
             <img src="{{asset('images/logo_title.png')}}" height="35" />
           </a>
         </div>
@@ -43,14 +44,14 @@
         <!-- Center elements -->
         <div class="order-lg-last col-lg-5 col-sm-8 col-8">
           <div class="d-flex float-end">
-            <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank">
+            <!--<a href="https://github.com/mdbootstrap/bootstrap-material-design" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank">
               <i class="fas fa-user-alt m-1 me-md-2"></i>
               <p class="d-none d-md-block mb-0">Sign in</p>
-            </a>
-            <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center bg-warning" target="_blank">
+            </a>-->
+            <!--<a href="https://github.com/mdbootstrap/bootstrap-material-design" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center bg-warning" target="_blank">
               <i class="far fa-user m-1 me-md-2"></i>
               <p class="d-none d-md-block mb-0 .text-warning">Sign up</p>
-            </a>
+            </a>-->
           </div>
         </div>
         <!-- Center elements -->
@@ -92,8 +93,8 @@
         <!-- Grid column -->
         <div class="col-12 col-lg-3 col-sm-12 mb-2">
           <!-- Content -->
-          <a href="https://mdbootstrap.com/" target="_blank" class="text-white h2">
-            MR
+          <a href="{{path('app_vote_process_start')}}" class="text-white h2">
+            <img src="{{asset('images/logo_title.png')}}" height="35" />
           </a>
           <p class="mt-1 text-white">
             © 2023: Maajabu Rafiki
@@ -102,39 +103,39 @@
         <!-- Grid column -->
 
         <!-- Grid column -->
-        <div class="col-6 col-sm-4 col-lg-2">
+        <div class="col-12 col-sm-12 col-lg-3">
           <!-- Links -->
           <h6 class="text-uppercase text-white fw-bold mb-2">
-            Store
+            Contact
           </h6>
           <ul class="list-unstyled mb-4">
-            <li><a class="text-white-50" href="#">About us</a></li>
-            <li><a class="text-white-50" href="#">Find store</a></li>
-            <li><a class="text-white-50" href="#">Categories</a></li>
-            <li><a class="text-white-50" href="#">Blogs</a></li>
+            <li><span class="text-white"><i class="fas fa-map-marker-alt"></i> N°16, Ave Basoko, Kinshasa</span></li>
+        <br>
+            <li><span class="text-white"><i class="fa fa-phone" ></i> +243 891 510 000</span></li>
+            <br>
+            <li><span class="text-white"><i class="fas fa-envelope"></i> contact@maajabugospel.com</span></li>
           </ul>
         </div>
         <!-- Grid column -->
 
         <!-- Grid column -->
-        <div class="col-6 col-sm-4 col-lg-2">
+        <!--<div class="col-6 col-sm-4 col-lg-2">
           <!-- Links -->
-          <h6 class="text-uppercase text-white fw-bold mb-2">
-            Information
-          </h6>
-          <ul class="list-unstyled mb-4">
-            <li><a class="text-white-50" href="#">Help center</a></li>
-            <li><a class="text-white-50" href="#">Money refund</a></li>
-            <li><a class="text-white-50" href="#">Shipping info</a></li>
-            <li><a class="text-white-50" href="#">Refunds</a></li>
-          </ul>
-        </div>
+          <!--<h6 class="text-uppercase text-white fw-bold mb-2">Newsletter</h6>
+          <p class="text-white">Stay in touch with latest updates about our products and offers</p>
+          <div class="input-group mb-3">
+            <input type="email" class="form-control border" placeholder="Email" aria-label="Email" aria-describedby="button-addon2" />
+            <button class="btn btn-light border shadow-0" type="button" id="button-addon2" data-mdb-ripple-color="dark">
+              Join
+            </button>
+          </div>-->
+        <!--</div>-->
         <!-- Grid column -->
 
         <!-- Grid column -->
         <div class="col-6 col-sm-4 col-lg-2">
           <!-- Links -->
-          <h6 class="text-uppercase text-white fw-bold mb-2">
+          <!--<h6 class="text-uppercase text-white fw-bold mb-2">
             Support
           </h6>
           <ul class="list-unstyled mb-4">
@@ -142,7 +143,7 @@
             <li><a class="text-white-50" href="#">Documents</a></li>
             <li><a class="text-white-50" href="#">Account restore</a></li>
             <li><a class="text-white-50" href="#">My orders</a></li>
-          </ul>
+          </ul>-->
         </div>
         <!-- Grid column -->
 
@@ -152,7 +153,7 @@
           <h6 class="text-uppercase text-white fw-bold mb-2">Newsletter</h6>
           <p class="text-white">Stay in touch with latest updates about our products and offers</p>
           <div class="input-group mb-3">
-            <input type="email" class="form-control border" placeholder="Email" aria-label="Email" aria-describedby="button-addon2" />
+            <input type="email" class="form-control border" id="inputEmail" placeholder="Email" aria-label="Email" aria-describedby="button-addon2" />
             <button class="btn btn-light border shadow-0" type="button" id="button-addon2" data-mdb-ripple-color="dark">
               Join
             </button>
@@ -178,45 +179,32 @@
         <!-- payment -->
 
         <!-- language selector -->
-        <div class="dropdown dropup">
-          <a class="dropdown-toggle text-white" href="#" id="Dropdown" role="button" data-mdb-toggle="dropdown" aria-expanded="false"> <i class="flag-united-kingdom flag m-0 me-1"></i>English </a>
-
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="Dropdown">
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-united-kingdom flag"></i>English <i class="fa fa-check text-success ms-2"></i></a>
-            </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-poland flag"></i>Polski</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-china flag"></i>中文</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-japan flag"></i>日本語</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-germany flag"></i>Deutsch</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-france flag"></i>Français</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-spain flag"></i>Español</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-russia flag"></i>Русский</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#"><i class="flag-portugal flag"></i>Português</a>
-            </li>
-          </ul>
-        </div>
         <!-- language selector -->
       </div>
     </div>
   </div>
 </footer>
 </div>
+<script>
+$(document).ready(function(){
+ 
+  $('#button-addon2').click(function() {
+	var value = $("#inputEmail").val();
+	$.ajax({
+	url: "{{ path('app_vote_process_newsletter') }}",
+    type: "POST",
+	data: {
+            'email': value
+    },
+    success: function(response) {
+		console.log(response);
+        //response = JSON.parse(response);
+        //$("div#myList").html(response.list);
+		//$("span#ttal").html(response.total);    
+    }
+    });
+  });
+});
+</script>
     </body>
 </html>
