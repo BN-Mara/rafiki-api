@@ -13,7 +13,7 @@
                 <div class="d-flex justify-content-center border-bottom">
                     <div class="p-3">
                     <span class="text-bold">
-                    Vous avez payé  <small class="text-muted">pour {{'vote.numberOfVote'}} vote(s)</small>
+                    Vous avez payé  <small class="text-muted">pour {{vote.numberOfVote}} vote(s)</small>
                     </span>
                         <!--<div class="progresses">
                             <div class="steps"> <span><i class="fa fa-check"></i></span> </div> <span class="line"></span>
@@ -31,7 +31,7 @@
                                 <small class="mt-2 ">Paiement effectué avec succès</small> 
                                 <a href="#" class="text-decoration-none invoice-link"></a> 
                             </div> 
-                            <button class="btn btn-dark btn-block order-button">Retour a l'accueil</button>
+                            <a href="{{path('app_vote_process_start')}}" class="btn btn-dark btn-block order-button">Retour a l'accueil</a>
                         </div>
                     </div>
                     <div class="col-md-6 background-muted">
@@ -56,7 +56,7 @@
                                 <div class="p-3 d-flex justify-content-center align-items-center"> <span>Artiste</span> </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="p-3 d-flex justify-content-center align-items-center"> <span>{{'candidate.firstname'}} {{'candidate.lastname'}}</span> </div>
+                                <div class="p-3 d-flex justify-content-center align-items-center"> <span>{{artist.firstname}} {{artist.lastname}}</span> </div>
                             </div>
                         </div>
                         <div class="row g-0 border-bottom">
@@ -64,7 +64,7 @@
                                 <div class="p-3 d-flex justify-content-center align-items-center"> <span>Nombre de votes</span> </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="p-3 d-flex justify-content-center align-items-center"> <span>{{'vote.numberOfVote'}}</span> </div>
+                                <div class="p-3 d-flex justify-content-center align-items-center"> <span>{{vote.numberOfVote}}</span> </div>
                             </div>
                         </div>
                         <div class="row g-0 border-bottom">
@@ -72,7 +72,7 @@
                                 <div class="p-3 d-flex justify-content-center align-items-center"> <span>Reference</span> </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="p-3 d-flex justify-content-center align-items-center"> <span>{{'reference'}}</span> </div>
+                                <div class="p-3 d-flex justify-content-center align-items-center"> <span>{{reference}}</span> </div>
                             </div>
                         </div>
                     

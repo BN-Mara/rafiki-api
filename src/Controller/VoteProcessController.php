@@ -156,8 +156,8 @@ class VoteProcessController extends AbstractController
         
         return $this->render('vote_process/success.html.twig', [
             'controller_name' => 'VoteProcessController',
-            //'candidate'=>$vote->getArtist(),
-            //'vote'=>$vote
+            'artist'=>$vote->getArtist(),
+            'vote'=>$vote
         ]);
 
     }
@@ -191,8 +191,9 @@ class VoteProcessController extends AbstractController
         
             return $this->render('vote_process/failed.html.twig', [
                 'status' => 'failed',
-                //'candidate'=>$vote->getArtist(),
-                //'vote'=>$vote
+                'artist'=>$vote->getArtist(),
+                'vote'=>$vote,
+                'reference'=>$payment->getReference()
             ]);
     
     }
@@ -219,8 +220,9 @@ class VoteProcessController extends AbstractController
            
         return $this->render('vote_process/failed.html.twig', [
             'status' => 'canceled',
-            'candidate'=>$vote->getArtist(),
-            'vote'=>$vote
+            'artist'=>$vote->getArtist(),
+            'vote'=>$vote,
+            'reference'=>$payment->getReference()
         ]);
 
     }
