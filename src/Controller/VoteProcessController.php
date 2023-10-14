@@ -35,6 +35,7 @@ class VoteProcessController extends AbstractController
         //$content = json_decode($request->getContent());
         $voteModeId = $request->request->get('voteModeId');
         $artistId = $request->request->get('artistId');
+       // $type = $request->request->get('type');
         
         //$voteMode = new VoteMode();
         //die(var_dump($content));
@@ -76,6 +77,14 @@ class VoteProcessController extends AbstractController
 
         $session = $request->getSession();
         $session->set('reference',$payment->getReference());
+
+        if($request->request->has('illico'))
+        {
+            return $this->redirectToRoute('app_illico',
+            ["reference"=>$payment->getReference(),
+            "amount"=>$payment->getAmount(),
+            "currency"=>$payment->getCurrency()]);
+        }
         
         return $this->redirect($this->payUrl->paymentUrl($payment, $request->getSchemeAndHttpHost()));
 
@@ -157,7 +166,8 @@ class VoteProcessController extends AbstractController
         return $this->render('vote_process/success.html.twig', [
             'controller_name' => 'VoteProcessController',
             'artist'=>$vote->getArtist(),
-            'vote'=>$vote
+            'vote'=>$vote,
+            'reference'=>$payment->getReference()
         ]);
 
     }

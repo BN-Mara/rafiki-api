@@ -12,6 +12,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\Entity\Prime;
 
 
 final class PrimeAdmin extends AbstractAdmin{
@@ -30,7 +31,9 @@ final class PrimeAdmin extends AbstractAdmin{
             // 'expanded' => true,
         ]);
         $form->add('name', TextType::class);
-        $form->add('isActive', CheckboxType::class);
+        $form->add('isActive', CheckboxType::class,[
+            'required'=>false
+        ]);
         $form->add('startTime', DateTimeType::class);
         $form->add('endTime', DateTimeType::class);
         $form->add('createdBy', TextType::class);
