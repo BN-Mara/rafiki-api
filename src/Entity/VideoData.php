@@ -11,6 +11,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\VideoDataRepository;
 use App\State\VideoStateProcessor;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -65,9 +67,13 @@ class VideoData
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $songName = null;
 
+    #[ORM\OneToMany(mappedBy: 'video', targetEntity: Comment::class)]
+    private Collection $comments;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
+        $this->comments = new ArrayCollection();
     }
     public function getId(): ?int
     {
@@ -226,6 +232,36 @@ class VideoData
     public function setSongName(?string $songName): self
     {
         $this->songName = $songName;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setVideo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getVideo() === $this) {
+                $comment->setVideo(null);
+            }
+        }
 
         return $this;
     }
