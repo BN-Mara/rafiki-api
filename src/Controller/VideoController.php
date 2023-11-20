@@ -89,6 +89,23 @@ class VideoController extends AbstractController
         }
         return $this->json(["success"=>true,"video"=>$video,"uid"=>$content->uid]);
     }
+    #[Route("/api/video/comments/{id}",name:'app_video_comments')]
+    public function getVideoComments($id):Response{
+        
+        $video = $this->em->getRepository(VideoData::class)->find($id);
+        $commentArray = array();
+        if (count($video->getComments()) > 0) {
+            # code...
+            foreach ($video->getComment() as $val) {
+                # code...
+                array_push($commentArray,[
+                    "usename"=>$val->getUser()->getUsername(),
+                    "profile"=>$val->getUser
+                ]);
+            }
+        }
+        return $this->json(["success"=>true,"video"=>$video,"uid"=>$content->uid]);
+    }
 
     #[Route("/api/video/check", name:'app_video_check', methods:'POST')]
     public function checkVideoToUpload(Request $request):Response
