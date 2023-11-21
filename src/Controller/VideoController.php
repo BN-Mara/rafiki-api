@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Competition;
 use App\Entity\Prime;
 use App\Entity\ResetPasswordRequest;
+use App\Entity\User;
 use App\Entity\UserData;
 use App\Entity\VideoData;
 use Doctrine\ORM\EntityManagerInterface;
@@ -98,13 +99,19 @@ class VideoController extends AbstractController
             # code...
             foreach ($video->getComment() as $val) {
                 # code...
+                $cUser = $val->getUser();
+                
                 array_push($commentArray,[
-                    "usename"=>$val->getUser()->getUsername(),
-                    "profile"=>$val->getUser
+                    "id"=>$val->getId(),
+                    "usename"=>$cUser->getUsername(),
+                    "profilePhoto"=>$cUser->getProfilePhoto(),
+                    "comment"=>$val->getComment(),
+                    "createdAt"=>$val->getCreatedAt(),
+                    "videoId"=>$id
                 ]);
             }
         }
-        return $this->json(["success"=>true,"video"=>$video,"uid"=>$content->uid]);
+        return $this->json(["success"=>true,"video"=>$video,"comments"=>$commentArray]);
     }
 
     #[Route("/api/video/check", name:'app_video_check', methods:'POST')]

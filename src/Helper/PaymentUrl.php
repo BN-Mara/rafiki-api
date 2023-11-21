@@ -13,10 +13,8 @@ class PaymentUrl{
         "Language"=>"fr","Reference"=>$payment->getReference(),"Accepturl"=>$host."/vote/process/success",
         "Cancelurl"=>$host."/vote/process/cancel","Declineurl"=>$host."/vote/process/fail",
         "NotifyURL"=>$host."/vote/process/notify"];
-        
         $jsonData = json_encode($postData);
         $maxiUrl = 'https://api.maxicashapp.com/payentry?data='.$jsonData;
         return $maxiUrl;
-       
     }
 }
