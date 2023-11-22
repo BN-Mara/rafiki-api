@@ -34,6 +34,9 @@ class Comment
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
+
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private array $likes = [];
     public function __construct()
     {
         $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
@@ -90,6 +93,18 @@ class Comment
     public function setCreatedAt(?\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getLikes(): array
+    {
+        return $this->likes;
+    }
+
+    public function setLikes(?array $likes): self
+    {
+        $this->likes = $likes;
 
         return $this;
     }

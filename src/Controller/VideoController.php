@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Competition;
 use App\Entity\Prime;
 use App\Entity\ResetPasswordRequest;
@@ -107,11 +108,33 @@ class VideoController extends AbstractController
                     "profilePhoto"=>$cUser->getProfilePhoto(),
                     "comment"=>$val->getComment(),
                     "createdAt"=>$val->getCreatedAt(),
-                    "videoId"=>$id
+                    "videoId"=>$id,
+                    "uid"=>$cUser->getId()
                 ]);
             }
         }
         return $this->json(["success"=>true,"comments"=>$commentArray]);
+    }
+    #[Route("/api/comment/user-like",name:'app_comment_user_like',methods:'POST')]
+    public function setUserLikeComment(Request $request):Response{
+        $content = json_decode($request->getContent());
+        $comment = $this->em->getRepository(Comment::class)->find($content->id);
+        if ($comment != null) {
+            # code...
+            $likes = $comment->getLikes();
+            if (in_array($content->uid,$likes)) {
+
+               $likes = array_diff($likes,[$content->uid]);
+               
+                # code...
+            }else{
+                array_push($likes,$content->uid);
+                
+            }
+            $comment->setLikes($likes);
+               $this->em->flush();
+        }
+        return $this->json(["success"=>true,"comment"=>$comment,"uid"=>$content->uid]);
     }
 
     #[Route("/api/video/check", name:'app_video_check', methods:'POST')]
