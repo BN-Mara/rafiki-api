@@ -109,7 +109,8 @@ class VideoController extends AbstractController
                     "comment"=>$val->getComment(),
                     "createdAt"=>$val->getCreatedAt(),
                     "videoId"=>$id,
-                    "uid"=>$cUser->getId()
+                    "uid"=>$cUser->getId(),
+                    "likes"=>$val->getLikes()
                 ]);
             }
         }
@@ -141,7 +142,8 @@ class VideoController extends AbstractController
                     "comment"=>$comment->getComment(),
                     "createdAt"=>$comment->getCreatedAt(),
                     "videoId"=>$comment->getVideo()->getId(),
-                    "uid"=>$comment->getUser()->getId()
+                    "uid"=>$comment->getUser()->getId(),
+                    "likes"=>$comment->getLikes()
                ];
         }
         return $this->json(["success"=>true,"comment"=>$c,"uid"=>$content->uid]);
