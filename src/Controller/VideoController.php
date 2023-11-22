@@ -97,7 +97,7 @@ class VideoController extends AbstractController
         $commentArray = array();
         if (count($video->getComments()) > 0) {
             # code...
-            foreach ($video->getComment() as $val) {
+            foreach ($video->getComments() as $val) {
                 # code...
                 $cUser = $val->getUser();
                 
