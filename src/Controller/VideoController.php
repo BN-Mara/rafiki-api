@@ -103,7 +103,7 @@ class VideoController extends AbstractController
                 
                 array_push($commentArray,[
                     "id"=>$val->getId(),
-                    "usename"=>$cUser->getUsername(),
+                    "username"=>$cUser->getUsername(),
                     "profilePhoto"=>$cUser->getProfilePhoto(),
                     "comment"=>$val->getComment(),
                     "createdAt"=>$val->getCreatedAt(),

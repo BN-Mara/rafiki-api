@@ -34,6 +34,12 @@ class Comment
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
+        
+        
+    }
 
     public function getId(): ?int
     {
