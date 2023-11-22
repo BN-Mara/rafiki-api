@@ -111,7 +111,7 @@ class VideoController extends AbstractController
                 ]);
             }
         }
-        return $this->json(["success"=>true,"video"=>$video,"comments"=>$commentArray]);
+        return $this->json(["success"=>true,"comments"=>$commentArray]);
     }
 
     #[Route("/api/video/check", name:'app_video_check', methods:'POST')]
