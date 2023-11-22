@@ -132,9 +132,19 @@ class VideoController extends AbstractController
                 
             }
             $comment->setLikes($likes);
+
                $this->em->flush();
+               $c = [
+                "id"=>$comment->getId(),
+                    "username"=>$comment->getUser()->getUsername(),
+                    "profilePhoto"=>$comment->getUser()->getProfilePhoto(),
+                    "comment"=>$comment->getComment(),
+                    "createdAt"=>$comment->getCreatedAt(),
+                    "videoId"=>$comment->getVideo()->getId(),
+                    "uid"=>$comment->getUser()->getId()
+               ];
         }
-        return $this->json(["success"=>true,"comment"=>$comment,"uid"=>$content->uid]);
+        return $this->json(["success"=>true,"comment"=>$c,"uid"=>$content->uid]);
     }
 
     #[Route("/api/video/check", name:'app_video_check', methods:'POST')]
