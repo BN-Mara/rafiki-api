@@ -90,7 +90,7 @@ class VoteProcessController extends AbstractController
 
         }
 
-        $artists = $this->em->getRepository(Artist::class)->findAll();
+        $artists = $this->em->getRepository(Artist::class)->findBy([],['numero' => 'ASC']);
         $vmodes = $this->em->getRepository(VoteMode::class)->findAll();
         $artistArray = array_chunk($artists,4);
         $total_text = count($artists)." Artist";
