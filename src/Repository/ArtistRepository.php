@@ -69,7 +69,7 @@ class ArtistRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('a')
             ->andWhere('a.firstName LIKE :val OR a.lastName LIKE :val OR a.numero LIKE :val')
             ->setParameter('val', '%'.$value.'%')
-            ->orderBy('a.id', 'ASC')
+            ->orderBy('a.numero', 'ASC')
             ->getQuery()
             ->getResult()
         ;
