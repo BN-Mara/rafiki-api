@@ -15,10 +15,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration as Extra;
+use Stripe\Checkout\Session;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Stripe\Stripe;
+
 class VoteProcessController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $em, private PaymentUrl $payUrl)
+    public $container;
+    private $payum;
+    public function __construct(private EntityManagerInterface $em, 
+    private PaymentUrl $payUrl, ContainerInterface $container)
     {
+        $this->container = $container;
         
     }
     #[Route('/vote/process', name: 'app_vote_process')]
@@ -53,7 +62,7 @@ class VoteProcessController extends AbstractController
         if(! $prime){
             return new Response("Prime not found");
         }
-        $payment =  new Payment();
+       
 
         $vote = new Vote();
         $vote->setArtist($artist);
@@ -62,6 +71,9 @@ class VoteProcessController extends AbstractController
         $vote->setIsPayed(false);
         $this->em->persist($vote);
 
+        
+        $payment =  new Payment();
+
         $payment->setAmount($voteMode->getPrice());
         $payment->setCurrency($currency);
         $payment->setVote($vote);
@@ -69,13 +81,26 @@ class VoteProcessController extends AbstractController
         $payment->setEmail("");
         $payment->setPhone("");
         $payment->setUsername("");
-        $r = substr($competition->getCode(),0,2).''.$prime->getId();
-        $payment->setReference(uniqid($r));
+        //$r = substr($competition->getCode(),0,2).''.$prime->getId();
+        $session = $request->getSession();
+        
+        if($request->request->has('illico'))
+        {
+            $r = $this->generateReference('IL',$prime->getId());
+            $session->set('paymode','ILLICO');
+        }else if($request->request->has('stripe')){
+            $r = $this->generateReference('ST',$prime->getId());
+            $session->set('paymode','STRIPE');
+        }else{
+            $r = $this->generateReference('MA',$prime->getId());
+            $session->set('paymode','MAXICASH');
+        }
+        $payment->setReference($r);
         $this->em->persist($payment);
 
         $this->em->flush();
 
-        $session = $request->getSession();
+        
         $session->set('reference',$payment->getReference());
 
         if($request->request->has('illico'))
@@ -84,6 +109,30 @@ class VoteProcessController extends AbstractController
             ["reference"=>$payment->getReference(),
             "amount"=>$payment->getAmount(),
             "currency"=>$payment->getCurrency()]);
+        }
+        if($request->request->has('stripe')){
+            Stripe::setApiKey($_ENV["STRIPE_SECRET"]);
+            header('Content-Type: application/json');
+
+            $YOUR_DOMAIN = 'http://localhost:4242';
+
+            $checkout_session = Session::create([
+            'line_items' => [[
+                # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
+                'price_data' => [
+                    'currency' => 'usd',
+                    'product_data' => [
+                      'name' => $voteMode->getDescription(),
+                    ],
+                    'unit_amount' => ($payment->getAmount() * 100),
+                  ],
+                  'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => $request->getSchemeAndHttpHost() . '/vote/process/success',
+            'cancel_url' => $request->getSchemeAndHttpHost() . '/vote/process/fail',
+            ]);
+            return $this->redirect($checkout_session->url);
         }
         
         return $this->redirect($this->payUrl->paymentUrl($payment, $request->getSchemeAndHttpHost()));
@@ -113,17 +162,88 @@ class VoteProcessController extends AbstractController
         if($request->getMethod() === 'POST'){
 
         $reference = $request->request->get('reference');
-        $payment = $this->em->getRepository(Payment::class)->findOneBy(['reference'=>$reference]);
-            if (!$payment) {
+        $payment2 = $this->em->getRepository(Payment::class)->findOneBy(['reference'=>$reference]);
+            if (!$payment2) {
                 # code...
-                return new Response("payment for Refecenfe not found");
+                return $this->redirectToRoute('app_vote_process_start');
+                //return new Response("payment for Refecenfe not found");
             }
 
 
         $session = $request->getSession();
 
         $session->set('reference',$reference);
-        if($payment->getStatus() != 'PAYED'){
+        if($payment2->getStatus() != 'PAYED'){
+            $s = substr($reference, -3);
+
+            $v = $payment2->getVote();
+            
+
+            $vote = new Vote();
+        $vote->setArtist($v->getArtist());
+        $vote->setNumberOfVote($v->getNumberOfVote());
+        $vote->setPrime($v->getPrime());
+        $vote->setIsPayed(false);
+        $this->em->persist($vote);
+
+        
+        $payment =  new Payment();
+
+        $payment->setAmount($payment2->getAmount());
+        $payment->setCurrency($payment2->getCurrency());
+        $payment->setVote($vote);
+        $payment->setStatus('PENDING');
+        $payment->setEmail($payment2->getEmail());
+        $payment->setPhone($payment2->getPhone());
+        $payment->setUsername($payment2->getUsername());
+        //$r = substr($competition->getCode(),0,2).''.$prime->getId();
+       
+        if($request->request->get('paymode') == "ILLICO")
+        {
+            $r = $this->generateReference('IL',$v->getPrime()->getId());
+        }else if($request->request->get('paymode') == 'STRIPE'){
+            $r = $this->generateReference('ST',$v->getPrime()->getId());
+        }else{
+            $r = $this->generateReference('MA',$v->getPrime()->getId());
+        }
+        $payment->setReference($r);
+        $this->em->persist($payment);
+
+        $this->em->flush();
+
+        $session = $request->getSession();
+        $session->set('reference',$payment->getReference());
+
+        if($request->request->get('paymode') == 'ILLICO')
+        {
+            return $this->redirectToRoute('app_illico',
+            ["reference"=>$payment->getReference(),
+            "amount"=>$payment->getAmount(),
+            "currency"=>$payment->getCurrency()]);
+        }
+        if($request->request->get('paymode') =='STRIPE'){
+            Stripe::setApiKey($_ENV["STRIPE_SECRET"]);
+            header('Content-Type: application/json');
+
+            $checkout_session = Session::create([
+            'line_items' => [[
+                # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
+                'price_data' => [
+                    'currency' => 'usd',
+                    'product_data' => [
+                      'name' => ''.$vote->$v->getNumberOfVote().'Votes à '.$payment2->getAmount().' USD',
+                    ],
+                    'unit_amount' => ($payment->getAmount() * 100),
+                  ],
+                  'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => $request->getSchemeAndHttpHost() . '/vote/process/success',
+            'cancel_url' => $request->getSchemeAndHttpHost() . '/vote/process/fail',
+            ]);
+            return $this->redirect($checkout_session->url);
+        }
+
             return $this->redirect($this->payUrl->paymentUrl($payment,$request->getSchemeAndHttpHost()));
 
         }else{
@@ -159,6 +279,7 @@ class VoteProcessController extends AbstractController
             $vote->setPayment($payment);
             $this->em->flush();
             $session->remove('reference');
+            $session->remove('paymode');
 
            
           
@@ -195,7 +316,9 @@ class VoteProcessController extends AbstractController
             $payment->setStatus('FAILED');
             $vote->setPayment($payment);
             $this->em->flush();
+            $paymode = $session->get('paymode');
             $session->remove('reference');
+            $session->remove('paymode');
             
            
         
@@ -203,7 +326,8 @@ class VoteProcessController extends AbstractController
                 'status' => 'failed',
                 'artist'=>$vote->getArtist(),
                 'vote'=>$vote,
-                'reference'=>$payment->getReference()
+                'reference'=>$payment->getReference(),
+                'paymode'=>$paymode
             ]);
     
     }
@@ -226,13 +350,16 @@ class VoteProcessController extends AbstractController
             $payment->setStatus('CANCELED');
             $vote->setPayment($payment);
             $this->em->flush();
+            $paymode = $session->get('paymode');
             $session->remove('reference');
+            $session->remove('paymode');
            
         return $this->render('vote_process/failed.html.twig', [
             'status' => 'canceled',
             'artist'=>$vote->getArtist(),
             'vote'=>$vote,
-            'reference'=>$payment->getReference()
+            'reference'=>$payment->getReference(),
+            'paymode'=>$paymode
         ]);
 
     }
@@ -269,6 +396,19 @@ class VoteProcessController extends AbstractController
         $this->em->persist($news);
         $this->em->flush();
         return $this->json(["success"=>true,"message"=>"Ok"]);
+
+    }
+    private function generateReference($payMode,$prime):string{
+       
+        $old = strtotime(date('Y-m-d h:i:s', strtotime('1970-01-01 10:00:00')));
+        $now = strtotime(date('Y-m-d h:i:s'));
+        $dif = $now - $old;
+        $dif = $dif.$prime.$payMode;
+        if($this->em->getRepository(Payment::class)->findOneBy(['reference'=>$dif])){
+           return $this->generateReference($payMode,$prime);
+        }
+        return $dif;
+    
 
     }
 }

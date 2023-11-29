@@ -76,3 +76,5 @@ services:
         class: App\Admin\PaymentAdmin
         tags:
             - { name: sonata.admin, model_class: App\Entity\Payment, manager_type: orm, label: Payments }
+            
+    Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
