@@ -42,6 +42,7 @@ class VoteProcessController extends AbstractController
     {
         if($request->getMethod() === 'POST'){
         //$content = json_decode($request->getContent());
+   
         $voteModeId = $request->request->get('voteModeId');
         $artistId = $request->request->get('artistId');
        // $type = $request->request->get('type');
@@ -49,8 +50,21 @@ class VoteProcessController extends AbstractController
         //$voteMode = new VoteMode();
         //die(var_dump($content));
         $voteMode = $this->em->getRepository(VoteMode::class)->find($voteModeId);
+        
         if(! $voteMode){
             return new Response("Vote type not found");
+        }
+        if($request->request->has('stripe')){
+            if($voteMode->getPrice() < 0.5){
+                $this->addFlash(
+                    'danger',
+                    'Le montant total dû de la session de paiement doit s\'élever à au moins 0,50 USD.'
+                );
+                return $this->redirectToRoute('app_vote_process_start');
+
+
+            }
+            
         }
         $artist = $this->em->getRepository(Artist::class)->find($artistId);
         if(! $artist){
@@ -111,6 +125,7 @@ class VoteProcessController extends AbstractController
             "currency"=>$payment->getCurrency()]);
         }
         if($request->request->has('stripe')){
+            
             Stripe::setApiKey($_ENV["STRIPE_SECRET"]);
             header('Content-Type: application/json');
 
@@ -133,9 +148,12 @@ class VoteProcessController extends AbstractController
             'cancel_url' => $request->getSchemeAndHttpHost() . '/vote/process/fail',
             ]);
             return $this->redirect($checkout_session->url);
+        
+            
         }
         
         return $this->redirect($this->payUrl->paymentUrl($payment, $request->getSchemeAndHttpHost()));
+    
 
         }
 
@@ -222,6 +240,7 @@ class VoteProcessController extends AbstractController
             "currency"=>$payment->getCurrency()]);
         }
         if($request->request->get('paymode') =='STRIPE'){
+            
             Stripe::setApiKey($_ENV["STRIPE_SECRET"]);
             header('Content-Type: application/json');
 
