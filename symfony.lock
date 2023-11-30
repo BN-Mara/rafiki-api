@@ -12,6 +12,9 @@
             "./src/ApiResource/.gitignore"
         ]
     },
+    "cmen/google-charts-bundle": {
+        "version": "5.0.1"
+    },
     "doctrine/annotations": {
         "version": "2.0",
         "recipe": {

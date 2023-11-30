@@ -36,45 +36,50 @@ services:
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
     
-    admin.prime:
-        class: App\Admin\PrimeAdmin
-        tags:
-            - { name: sonata.admin, model_class: App\Entity\Prime, manager_type: orm, label: Prime }
+   
     admin.competition:
         class: App\Admin\CompetitionAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\Competition, manager_type: orm, label: Competition }
+            - { name: sonata.admin, model_class: App\Entity\Competition, manager_type: orm, label: Competition, group: Competitions, icon: "<i class=\"fa fa-music\"></i>"}
+    admin.prime:
+        class: App\Admin\PrimeAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Prime, manager_type: orm, label: Prime, group: Competitions }
     admin.tutor:
         class: App\Admin\TutorAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\Tutor, manager_type: orm, label: Tutor }
+            - { name: sonata.admin, model_class: App\Entity\Tutor, manager_type: orm, label: Tutor, group: Application, icon: "<i class=\"fa fa-mobile\"></i>"}
     admin.userdata:
         class: App\Admin\UserDataAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\UserData, manager_type: orm, label: Users }
+            - { name: sonata.admin, model_class: App\Entity\UserData, manager_type: orm, label: Users, group: Application }
     admin.videodata:
         class: App\Admin\VideoDataAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\VideoData, manager_type: orm, label: Videos }
+            - { name: sonata.admin, model_class: App\Entity\VideoData, manager_type: orm, label: Videos, group: Application }
     admin.notification:
         class: App\Admin\NotificationAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\Notification, manager_type: orm, label: Notification }
+            - { name: sonata.admin, model_class: App\Entity\Notification, manager_type: orm, label: Notification, group: Application }
     admin.artist:
         class: App\Admin\ArtistAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\Artist, manager_type: orm, label: Artists }
+            - { name: sonata.admin, model_class: App\Entity\Artist, manager_type: orm, label: Artists, group: Votes, icon: "<i class=\"fas fa-vote-yea\"></i>" }
     admin.votemode:
         class: App\Admin\VoteModeAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\VoteMode, manager_type: orm, label: VoteModes }
+            - { name: sonata.admin, model_class: App\Entity\VoteMode, manager_type: orm, label: VoteModes, group: Votes }
     admin.vote:
         class: App\Admin\VoteAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\Vote, manager_type: orm, label: Votes}
+            - { name: sonata.admin, model_class: App\Entity\Vote, manager_type: orm, label: Votes, group: Votes}
     admin.payment:
         class: App\Admin\PaymentAdmin
         tags:
-            - { name: sonata.admin, model_class: App\Entity\Payment, manager_type: orm, label: Payments }
-            
+            - { name: sonata.admin, model_class: App\Entity\Payment, manager_type: orm, label: Payments, group: Votes }
+    app.menu_listener:
+        class: App\EventListener\MenuBuilderListener
+        tags:
+            - { name: kernel.event_listener, event: sonata.admin.event.configure.menu.sidebar, method: addMenuItems }
+
     Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
