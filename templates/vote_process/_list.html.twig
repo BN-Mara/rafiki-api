@@ -29,20 +29,29 @@
 					     </select>
 					</label>
 				</div>
-					
-  					
-				
+
 				</p>
                 <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                  
-					<button  class="btn btn-warning shadow-0 me-1" type="submit"  formmethod="post" formaction="{{path('app_vote_process_start')}}">PAYER +</button>
+                  <div class="row">
+					<div class="col-6">
+						<button  class="btn btn-warning shadow-0 me-1" type="submit"  formmethod="post" formaction="{{path('app_vote_process_start')}}">PAYER +</button>
 					<!--<button class="btn btn-light border icon-hover px-2 pt-2"><i class="fas fa-heart fa-lg text-secondary px-1"></i></button>-->
+					</div>
+					<div class="col-6">
+						<button  class="btn btn-info shadow-0 me-1 float-right" type="submit" name="araka"  formmethod="post" formaction="{{path('app_vote_process_start')}}">PAYER +</button>
+					</div>
+				  </div>
 				</div>
 				<div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
                   
 					<button  class="btn btn-warning shadow-0 me-1" type="submit" name="stripe"  formmethod="post" formaction="{{path('app_vote_process_start')}}">Payer à l'international</button>
 					
 				</div>
+				<!--<div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
+                  
+					<button  class="btn btn-warning shadow-0 me-1" type="submit" name="araka"  formmethod="post" formaction="{#{path('app_vote_process_start')}#}">PAYER</button>
+					
+				</div>-->
 				<!--<div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
                   
 					<button  class="btn btn-warning shadow-0 me-1" type="submit" name="illico"  formmethod="post" formaction="{*{path('app_vote_process_start')}*}">PAYER AVEC ILLICOCash</button>

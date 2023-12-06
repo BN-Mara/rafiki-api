@@ -43,6 +43,9 @@ class Payment
 
     #[ORM\Column(length: 32, nullable: true)]
     private ?string $username = null;
+
+    #[ORM\Column(length: 32, nullable: true)]
+    private ?string $gatewayReference = null;
     public function __construct()
     {
         $this->createdAt = new \DateTime('now',new \DateTimeZone('Africa/Kinshasa'));
@@ -159,6 +162,18 @@ class Payment
     public function setUsername(?string $username): self
     {
         $this->username = $username;
+
+        return $this;
+    }
+
+    public function getGatewayReference(): ?string
+    {
+        return $this->gatewayReference;
+    }
+
+    public function setGatewayReference(?string $gatewayReference): self
+    {
+        $this->gatewayReference = $gatewayReference;
 
         return $this;
     }

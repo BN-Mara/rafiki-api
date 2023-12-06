@@ -6,6 +6,7 @@ use App\Entity\Artist;
 use App\Entity\NewsLetterSubscriber;
 use App\Entity\Payment;
 use App\Entity\Prime;
+use App\Entity\UserData;
 use App\Entity\Vote;
 use App\Entity\VoteMode;
 use App\Helper\PaymentUrl;
@@ -40,6 +41,9 @@ class VoteProcessController extends AbstractController
     #[Route('/vote/process/start', name: 'app_vote_process_start')]
     public function process(Request $request): Response
     {
+       if($request->query->has('username')){
+            $session = $request->getSession()->set('username',$request->query->get('username'));
+        }
         if($request->getMethod() === 'POST'){
         //$content = json_decode($request->getContent());
    
@@ -76,7 +80,7 @@ class VoteProcessController extends AbstractController
         if(! $prime){
             return new Response("Prime not found");
         }
-       
+        $session = $request->getSession();
 
         $vote = new Vote();
         $vote->setArtist($artist);
@@ -92,11 +96,21 @@ class VoteProcessController extends AbstractController
         $payment->setCurrency($currency);
         $payment->setVote($vote);
         $payment->setStatus('PENDING');
-        $payment->setEmail("");
-        $payment->setPhone("");
-        $payment->setUsername("");
+        if($session->has('username')){
+            $user = $this->em->getRepository(UserData::class)->findOneBy(['email'=>$session->get('username')]);
+            if($user){
+                $payment->setEmail($user->getEmail());
+                $payment->setPhone($user->getPone());
+                $payment->setUsername($user->getName());
+            }
+        }else{
+            $payment->setEmail("");
+            $payment->setPhone("");
+            $payment->setUsername("");
+        }
+        
         //$r = substr($competition->getCode(),0,2).''.$prime->getId();
-        $session = $request->getSession();
+        
         
         if($request->request->has('illico'))
         {
@@ -105,6 +119,9 @@ class VoteProcessController extends AbstractController
         }else if($request->request->has('stripe')){
             $r = $this->generateReference('ST',$prime->getId());
             $session->set('paymode','STRIPE');
+        }else if($request->request->has('araka')){
+            $r = $this->generateReference('AR',$prime->getId());
+            $session->set('paymode','ARAKA');
         }else{
             $r = $this->generateReference('MA',$prime->getId());
             $session->set('paymode','MAXICASH');
@@ -120,11 +137,20 @@ class VoteProcessController extends AbstractController
         if($request->request->has('illico'))
         {
             return $this->redirectToRoute('app_illico',
-            ["reference"=>$payment->getReference(),
+            [
+            "reference"=>$payment->getReference(),
             "amount"=>$payment->getAmount(),
             "currency"=>$payment->getCurrency()]);
         }
+        if($request->request->has('araka')){
+            
+                $url = 'https://araka-merchant-uat.azurewebsites.net/payment/9DE6E3AE-D1A2-49CF-B62C-590BCA87E4DE?transactionReference='.$payment->getReference().'&currency=USD&amount='.$payment->getAmount().'&merchant=b255c76a-41cc-4398-bfd2-b2f9e3238c2d';
+ 
+            return $this->redirect($url);
+
+        }
         if($request->request->has('stripe')){
+          
             
             Stripe::setApiKey($_ENV["STRIPE_SECRET"]);
             header('Content-Type: application/json');
@@ -294,11 +320,15 @@ class VoteProcessController extends AbstractController
             }
             $vote = $payment->getVote();
             $vote->setIsPayed(true);
-            $payment->setStatus('PAYED');
+            $payment->setStatus('PAID');
+            if($session->has('syetemReference')){
+                $payment->setGatewayReference($session->get('syetemReference'));
+            }
             $vote->setPayment($payment);
             $this->em->flush();
             $session->remove('reference');
             $session->remove('paymode');
+            $session->remove('syetemReference');
 
            
           
@@ -333,11 +363,15 @@ class VoteProcessController extends AbstractController
             $vote = $payment->getVote();
             $vote->setIsPayed(false);
             $payment->setStatus('FAILED');
+            if($session->has('syetemReference')){
+                $payment->setGatewayReference($session->get('syetemReference'));
+            }
             $vote->setPayment($payment);
             $this->em->flush();
             $paymode = $session->get('paymode');
             $session->remove('reference');
             $session->remove('paymode');
+            $session->remove('syetemReference');
             
            
         
@@ -367,11 +401,15 @@ class VoteProcessController extends AbstractController
             $vote = $payment->getVote();
             $vote->setIsPayed(false);
             $payment->setStatus('CANCELED');
+            if($session->has('syetemReference')){
+                $payment->setGatewayReference($session->get('syetemReference'));
+            }
             $vote->setPayment($payment);
             $this->em->flush();
             $paymode = $session->get('paymode');
             $session->remove('reference');
             $session->remove('paymode');
+            $session->remove('syetemReference');
            
         return $this->render('vote_process/failed.html.twig', [
             'status' => 'canceled',
@@ -381,6 +419,24 @@ class VoteProcessController extends AbstractController
             'paymode'=>$paymode
         ]);
 
+    }
+    #[Route('/vote/process/araka-return', name: 'app_vote_process_araka-return')]
+    public function arakaReturn(Request $request): Response
+    {
+        $session = $request->getSession();
+        if(!$session->has('reference')){
+            return $this->redirectToRoute('app_vote_process_start');
+        }
+        if($request->query->has('syetemReference')){
+            $session->set('syetemReference',$request->query->get('syetemReference'));
+        }
+        
+        if($request->query->has('transactionStatus') && $request->query->get('transactionStatus') === 'SUCCESS'){
+            return $this->redirectToRoute('app_vote_process_success');
+        }else{
+            return $this->redirectToRoute('app_vote_process_fail');
+        }
+       
     }
 
     #[Route('/vote/process/notify', name: 'app_vote_process_notify')]
