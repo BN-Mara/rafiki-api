@@ -45,6 +45,8 @@ final class VoteAdmin extends AbstractAdmin{
         $datagrid->add('isPayed');
         $datagrid->add('numberOfVote');
         $datagrid->add('prime.name');
+        $datagrid->add('createdAt');
+        $datagrid->add('payment.reference');
     
     }
 
@@ -57,6 +59,9 @@ final class VoteAdmin extends AbstractAdmin{
         $list->addIdentifier('isPayed');
         $list->addIdentifier('prime.name');
         $list->addIdentifier('createdAt');
+        $list->addIdentifier('payment.reference');
+
+
     }
 
     protected function configureShowFields(ShowMapper $show): void
