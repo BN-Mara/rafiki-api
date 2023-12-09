@@ -101,7 +101,7 @@ final class PrimeAdmin extends AbstractAdmin{
             $this->em->flush();
             $object->setIsActive(true);
         }
-             $object->setModificationTime(new \DateTime('now',new \DateTimeZone('Africa/Kinshasa')));
+             $object->setModifiedAt(new \DateTime('now',new \DateTimeZone('Africa/Kinshasa')));
 
     }
 
