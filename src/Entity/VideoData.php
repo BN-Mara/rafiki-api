@@ -17,7 +17,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: VideoDataRepository::class)]
-#[ApiResource(operations:[new Get(),new Post(),new Put(),new GetCollection()])]
+#[ApiResource(operations:[new Get(),new Post(),new Put(),new GetCollection()], order: ['createdAt' => 'DESC'])]
 #[Post(processor: VideoStateProcessor::class)]
 #[ApiFilter(SearchFilter::class,properties:['username'=>'exact','primeId'=>'exact','userId'=>'exact'])]
 class VideoData
