@@ -13,9 +13,14 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use App\Entity\Prime;
-
+use Doctrine\ORM\EntityManagerInterface;
 
 final class PrimeAdmin extends AbstractAdmin{
+
+    public function __construct(private EntityManagerInterface $em)
+    {
+        
+    }
 
     protected function configureFormFields(FormMapper $form): void
     {
@@ -71,12 +76,12 @@ final class PrimeAdmin extends AbstractAdmin{
         //$plainPassword = $object->getPassword();
         if($object->isIsActive()){
 
-            $em  = $this->getModelManager()->getEntityManager(Prime::class);
+            //$em  = $this->getModelManager()->getEntityManager(Prime::class);
             $comp = $object->getCompetitionId();
             foreach($comp as $c){
                 $c->setIsActive(false);
             }
-            $em->flush();
+            $this->em->flush();
             $object->setIsActive(true);
         }
 
@@ -88,12 +93,12 @@ final class PrimeAdmin extends AbstractAdmin{
     {
         if($object->isIsActive()){
 
-            $em  = $this->getModelManager()->getEntityManager(Prime::class);
+            //$em  = $this->getModelManager()->getEntityManager(Prime::class);
             $comp = $object->getCompetitionId();
             foreach($comp as $c){
                 $c->setIsActive(false);
             }
-            $em->flush();
+            $this->em->flush();
             $object->setIsActive(true);
         }
              $object->setModificationTime(new \DateTime('now',new \DateTimeZone('Africa/Kinshasa')));
