@@ -55,7 +55,9 @@ final class ArtistAdmin extends AbstractAdmin{
         $form->add('file', FileType::class,[
             'required' => false
         ]);
-        $form->add('bio', TextareaType::class);
+        $form->add('bio', TextareaType::class,[
+            'required' => false
+        ]);
         
 
     }
