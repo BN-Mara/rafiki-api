@@ -48,7 +48,9 @@ final class ArtistAdmin extends AbstractAdmin{
         $form->add('birthDate', DateType::class,[
             'years'=>range(2005,2020)
         ]);
-        $form->add('isActive', CheckboxType::class);
+        $form->add('isActive', CheckboxType::class,[
+            'required' => false
+        ]);
 
         $form->add('file', FileType::class,[
             'required' => false
@@ -104,8 +106,11 @@ final class ArtistAdmin extends AbstractAdmin{
 
     public function preUpdate(object $image): void
     {
+        if($image->getFile()){
+            
         $image->setCoverImage("/");
         $this->manageFileUpload($image);
+        }
     }
 
     private function manageFileUpload(object $image): void
