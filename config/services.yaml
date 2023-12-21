@@ -83,3 +83,8 @@ services:
             - { name: kernel.event_listener, event: sonata.admin.event.configure.menu.sidebar, method: addMenuItems }
 
     Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
+
+    admin.comment:
+        class: App\Admin\CommentAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Comment, controller: ~, manager_type: orm, group: admin, label: Comment }

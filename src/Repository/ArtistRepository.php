@@ -67,7 +67,7 @@ class ArtistRepository extends ServiceEntityRepository
     public function findBySearchTerm($value): array
     {
         return $this->createQueryBuilder('a')
-            ->andWhere('a.firstName LIKE :val OR a.lastName LIKE :val OR a.numero LIKE :val')
+            ->andWhere('a.isActive=true AND (a.firstName LIKE :val OR a.lastName LIKE :val OR a.numero LIKE :val)')
             ->setParameter('val', '%'.$value.'%')
             ->orderBy('a.numero', 'ASC')
             ->getQuery()
